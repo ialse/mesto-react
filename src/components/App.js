@@ -3,14 +3,25 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 
 function App() {
+
+  function handleEditAvatarClick() {
+    document.querySelector('.popup_edit-avatar').classList.add("popup_opened");
+  }
+  function handleEditProfileClick() {
+    document.querySelector('.popup_edit-profile').classList.add("popup_opened");
+  }
+  function handleAddPlaceClick() {
+    document.querySelector('.popup_add-card').classList.add("popup_opened");
+  }
+
   return (
     <div className="page">
       <Header />
-      <Main />
+      <Main onEditProfile={handleEditProfileClick}
+        onEditAvatar={handleEditAvatarClick}
+        onAddPlace={handleAddPlaceClick}
+      />
       <Footer />
-
-
-
 
       <div className="block-action"></div>
       <div className="error-server"></div>
