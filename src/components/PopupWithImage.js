@@ -1,9 +1,9 @@
-function PopupWithForm(props) {
+function PopupWithImage() {
   return (
-    <div className={`popup popup__form_${props.name}`}>
-      <form className="popup__form" name={`popup__form_${props.name}`} novalidate>
-        <h2 className="popup__title">{props.title}</h2>
-        <button type="submit" className="popup__btn-submit">Сохранить</button>
+    <div className="popup popup_image">
+      <form className="popup__container popup__container_image" name="popup__image" novalidate>
+        <img className="popup__image" src="#" alt="" />
+        <h2 className="popup__title popup__title_popup-image"></h2>
         <button type="button" className="popup__btn-close"></button>
       </form>
     </div>
@@ -11,4 +11,4 @@ function PopupWithForm(props) {
   );
 }
 
-export default PopupWithForm;
+export default PopupWithImage;
