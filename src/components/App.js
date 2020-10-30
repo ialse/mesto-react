@@ -3,11 +3,13 @@ import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
+import PopupWithImage from './PopupWithImage.js';
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setisAddPlacePopupOpen] = React.useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [selectedCard, setSelectedCard] = React.useState(false);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -18,13 +20,18 @@ function App() {
   }
 
   function handleAddPlaceClick() {
-    setisAddPlacePopupOpen(true);
+    setIsAddPlacePopupOpen(true);
+  }
+
+  function handleCardClick(card) {
+    setSelectedCard(card);
   }
 
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
-    setisAddPlacePopupOpen(false);
+    setIsAddPlacePopupOpen(false);
+    setSelectedCard(false);
   }
 
   return (
@@ -34,6 +41,7 @@ function App() {
         onEditProfile={handleEditProfileClick}
         onEditAvatar={handleEditAvatarClick}
         onAddPlace={handleAddPlaceClick}
+        onCardClick={handleCardClick}
       />
       <Footer />
 
@@ -49,6 +57,7 @@ function App() {
           <span className="popup__error" id="link-input-error"></span>
           </label>
         }/>
+
       <PopupWithForm
         name="edit-profile"
         title="Редактировать профиль"
@@ -58,16 +67,17 @@ function App() {
           <>
             <label className="popup__field">
             <input type="text" className="popup__input popup__input_name" id="name-input" placeholder="Имя" name="name"
-              minlength="2" maxlength="40" required />
+              minLength="2" maxLength="40" required />
             <span className="popup__error" id="name-input-error"></span>
             </label>
             <label className="popup__field">
             <input type="text" className="popup__input popup__input_work" id="work-input" placeholder="Работа" name="about"
-              minlength="2" maxlength="200" required />
+              minLength="2" maxLength="200" required />
             <span className="popup__error" id="work-input-error"></span>
             </label>
           </>
         }/>
+
       <PopupWithForm
         name="add-card"
         title="Новое место"
@@ -77,7 +87,7 @@ function App() {
           <>
             <label className="popup__field">
             <input type="text" className="popup__input popup__input_place" id="title-input" name="name" placeholder="Название"
-              minlength="1" maxlength="30" required />
+              minLength="1" maxLength="30" required />
             <span className="popup__error" id="title-input-error"></span>
             </label>
             <label className="popup__field">
@@ -88,31 +98,12 @@ function App() {
           </>
         }/>
 
-      <div className="block-action"></div>
-      <div className="error-server"></div>
+      <PopupWithImage
+        card={selectedCard}
+        onClose={closeAllPopups}
+      />
 
-      <div className="popup popup_confirm-delete">
-        <form className="popup__container popup__container_popup_confirm-delete" name="popup__confirm-delete" novalidate>
-          <h2 className="popup__title popup__title_confirm">Вы уверены?</h2>
-          <button type="submit" className="popup__btn-submit">Да</button>
-          <button type="button" className="popup__btn-close"></button>
-        </form>
-      </div>
-
-      <template id="card-template">
-        <article className="element">
-          <img className="element__image" />
-          <h2 className="element__title"></h2>
-          <div className="element__likes">
-            <button type="button" className="element__button-like"></button>
-            <span className="element__likes-count">3</span>
-          </div>
-          <button type="button" className="element__button-remove"></button>
-        </article>
-      </template>
     </div>
-
-
   );
 }
 
