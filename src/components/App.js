@@ -37,14 +37,18 @@ function App() {
   return (
     <div className="page">
       <Header />
+      
+      {/*Создаем компонент Main и передаем обработчики*/}
       <Main 
         onEditProfile={handleEditProfileClick}
         onEditAvatar={handleEditAvatarClick}
         onAddPlace={handleAddPlaceClick}
-        onCardClick={handleCardClick}
+        onCardClick={handleCardClick} // Обработчик клика по карточке
       />
+
       <Footer />
 
+      {/*Создаем попап для аватара и передаем пропсы и обработчики*/}
       <PopupWithForm
         name="edit-avatar"
         title="Обновить аватар"
@@ -58,6 +62,7 @@ function App() {
           </label>
         }/>
 
+      {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
       <PopupWithForm
         name="edit-profile"
         title="Редактировать профиль"
@@ -78,6 +83,7 @@ function App() {
           </>
         }/>
 
+      {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
       <PopupWithForm
         name="add-card"
         title="Новое место"
@@ -98,6 +104,7 @@ function App() {
           </>
         }/>
 
+      {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
       <PopupWithImage
         card={selectedCard}
         onClose={closeAllPopups}
