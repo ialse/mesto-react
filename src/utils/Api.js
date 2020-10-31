@@ -86,12 +86,22 @@ class Api {
         })
             .then(res => { return this._getResponseData(res); })
     }
+
+    // Вывод ошибки запроса к серверу на страницу
+    setErrorServer(err) {
+        this._errorServer.textContent = `Ошибка при соединение с сервером: ${err}. Попробуйте повторить позже`;
+
+        this._errorServer.classList.add('error-server_active');
+        setTimeout(() => {
+            this._errorServer.classList.remove('error-server_active');
+        }, 8000)
+    }
 }
 
 export const api = new Api({
     baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-16',
     headers: {
-      authorization: '4b2550a1-9754-487b-87bb-c51dfc845f43',
-      'Content-Type': 'application/json'
+        authorization: '4b2550a1-9754-487b-87bb-c51dfc845f43',
+        'Content-Type': 'application/json'
     },
-  });
+});

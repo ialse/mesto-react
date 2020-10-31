@@ -4,13 +4,16 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import PopupWithImage from './PopupWithImage.js';
+import { PopupEditAvatar, PopupEditProfile, PopupAddCard } from './PopupHTML.js';
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(false);
 
+  {/*Обработчики открытия попапов*/ }
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -27,6 +30,7 @@ function App() {
     setSelectedCard(card);
   }
 
+  {/*Обработчик закрытия попапов*/ }
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
@@ -37,9 +41,9 @@ function App() {
   return (
     <div className="page">
       <Header />
-      
-      {/*Создаем компонент Main и передаем обработчики*/}
-      <Main 
+
+      {/*Создаем компонент Main и передаем обработчики через пропсы*/}
+      <Main
         onEditProfile={handleEditProfileClick}
         onEditAvatar={handleEditAvatarClick}
         onAddPlace={handleAddPlaceClick}
@@ -52,57 +56,44 @@ function App() {
       <PopupWithForm
         name="edit-avatar"
         title="Обновить аватар"
+        btnName="Сохранить"
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
-        children={
-          <label className="popup__field">
-          <input type="url" className="popup__input popup__input_link" id="link-input" name="link"
-            placeholder="Ссылка на картинку для аватара" required />
-          <span className="popup__error" id="link-input-error"></span>
-          </label>
-        }/>
+      >
+        <PopupEditAvatar />
+      </PopupWithForm>
 
       {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
       <PopupWithForm
         name="edit-profile"
         title="Редактировать профиль"
+        btnName="Сохранить"
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        children={
-          <>
-            <label className="popup__field">
-            <input type="text" className="popup__input popup__input_name" id="name-input" placeholder="Имя" name="name"
-              minLength="2" maxLength="40" required />
-            <span className="popup__error" id="name-input-error"></span>
-            </label>
-            <label className="popup__field">
-            <input type="text" className="popup__input popup__input_work" id="work-input" placeholder="Работа" name="about"
-              minLength="2" maxLength="200" required />
-            <span className="popup__error" id="work-input-error"></span>
-            </label>
-          </>
-        }/>
+      >
+        <PopupEditProfile />
+      </PopupWithForm>
 
       {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
       <PopupWithForm
         name="add-card"
         title="Новое место"
+        btnName="Создать"
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
-        children={
-          <>
-            <label className="popup__field">
-            <input type="text" className="popup__input popup__input_place" id="title-input" name="name" placeholder="Название"
-              minLength="1" maxLength="30" required />
-            <span className="popup__error" id="title-input-error"></span>
-            </label>
-            <label className="popup__field">
-            <input type="url" className="popup__input popup__input_link" id="link-input" name="link"
-              placeholder="Ссылка на картинку" required />
-            <span className="popup__error" id="link-input-error"></span>
-            </label>
-          </>
-        }/>
+      >
+        <PopupAddCard />
+      </PopupWithForm>
+
+      {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
+      <PopupWithForm
+        name="confirm-delete"
+        title="Вы уверены?"
+        btnName="Да"
+        isOpen={isDelCardPopupOpen}
+        onClose={closeAllPopups}
+      >
+      </PopupWithForm>
 
       {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
       <PopupWithImage

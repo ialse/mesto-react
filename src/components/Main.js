@@ -1,8 +1,8 @@
 import React from 'react';
 import Card from './Card.js';
-import { api } from '../utils/Api.js';
+import { api } from '../utils/api.js';
 
-function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
+function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
 
     const [userName, setUserName] = React.useState("Имя");
     const [userDescription, setUserDescription] = React.useState("Работа");
@@ -13,7 +13,7 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
         Promise.all([
             api.getUserInfoFromServer(), // Получаем данные профиля
             api.getInitialCards() // Получаем массив карточек
-            ])
+        ])
             .then((data) => {
                 const [userData, cardsData] = data;
                 setUserName(userData.name);
@@ -21,7 +21,7 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
                 setUserAvatar(userData.avatar);
                 setCards(cardsData);
             })
-             .catch((err) => { /*setErrorServer(err); */});
+            .catch((err) => { api.setErrorServer(err); });
 
     }, []);
 
@@ -42,8 +42,8 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
             </section>
 
             <section className="elements">
-                {cards.map((card, i) => (
-                    <Card card={card} key={i} onCardClick={onCardClick} />
+                {cards.map((card) => (
+                    <Card card={card} key={card._id} onCardClick={onCardClick} />
                 ))}
             </section>
         </main>
