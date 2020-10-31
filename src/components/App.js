@@ -11,9 +11,9 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(false);
+  const [selectedCard, setSelectedCard] = React.useState({});
 
-  {/*Обработчики открытия попапов*/ }
+  /*Обработчики открытия попапов*/
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -30,12 +30,12 @@ function App() {
     setSelectedCard(card);
   }
 
-  {/*Обработчик закрытия попапов*/ }
+  /*Обработчик закрытия попапов*/
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
-    setSelectedCard(false);
+    setSelectedCard({});
   }
 
   return (
