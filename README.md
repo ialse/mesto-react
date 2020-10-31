@@ -29,8 +29,8 @@
 7. Babel
 8. postCSS
 9. React:
-    -JSX
-    -CRA
-    -React DevTools
+    - JSX
+    - CRA
+    - React DevTools
 
 Ссылка на проект: https://ialse.github.io/mesto-react/index.html
