@@ -8,17 +8,17 @@ export function PopupEditAvatar() {
     );
 }
 
-export function PopupEditProfile() {
+export function InputEditProfile({ inputName, inputAbout, onChange }) {
     return (
         <>
             <label className="popup__field">
                 <input type="text" className="popup__input popup__input_name" id="name-input" placeholder="Имя" name="name"
-                    minLength="2" maxLength="40" required />
+                    minLength="2" maxLength="40" required value={inputName} onChange={onChange} />
                 <span className="popup__error" id="name-input-error"></span>
             </label>
             <label className="popup__field">
                 <input type="text" className="popup__input popup__input_work" id="work-input" placeholder="Работа" name="about"
-                    minLength="2" maxLength="200" required />
+                    minLength="2" maxLength="200" required value={inputAbout} onChange={onChange} />
                 <span className="popup__error" id="work-input-error"></span>
             </label>
         </>

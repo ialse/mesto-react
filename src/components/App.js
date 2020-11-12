@@ -4,6 +4,7 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import PopupWithImage from './PopupWithImage.js';
+import EditProfilePopup from './EditProfilePopup.js';
 import { PopupEditAvatar, PopupEditProfile, PopupAddCard } from './PopupHTML.js';
 import { api } from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -38,6 +39,18 @@ function App() {
 
   function handleCardClick(card) {
     setSelectedCard(card);
+  }
+
+  function handleUpdateUser(inputValues) {
+    api.saveUserInfoToServer(inputValues)   // Сохраняем на сервере
+      .then((info) => { setCurrentUser(info) }) // Устанавливаем данные о пользователе на страницу
+      .catch((err) => { api.setErrorServer(err); })
+      .finally(() => {
+        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        closeAllPopups()
+        //editProfileValidation.resetForm(); // Очищаем поля при Создании
+      });
+
   }
 
   {/*Обработчик закрытия попапов*/ }
@@ -75,15 +88,11 @@ function App() {
         </PopupWithForm>
 
         {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
-        <PopupWithForm
-          name="edit-profile"
-          title="Редактировать профиль"
-          btnName="Сохранить"
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-        >
-          <PopupEditProfile />
-        </PopupWithForm>
+          onUpdateUser={handleUpdateUser}
+        />
 
         {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
         <PopupWithForm
