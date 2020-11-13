@@ -1,13 +1,13 @@
 import React from 'react';
-import { PopupEditAvatar, InputEditProfile, PopupAddCard } from './PopupHTML';
+import { InputEditProfile, PopupAddCard } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
     const currentUser = React.useContext(CurrentUserContext);
-    const [name, setName] = React.useState("Имя");
-    const [description, setDescription] = React.useState("Работа");
+    const [name, setName] = React.useState("");
+    const [description, setDescription] = React.useState("");
 
     React.useEffect(() => {
         setName(currentUser.name);
@@ -23,7 +23,8 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
     }
 
     function handleChange(e) {
-        //если аттрибут name имеет значение name, то устанавливаем setName
+        // если аттрибут name имеет значение name, то устанавливаем setName
+        // иначе setDescription
         e.target.name === "name" ?
             setName(e.target.value) :
             setDescription(e.target.value);

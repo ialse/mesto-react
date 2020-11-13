@@ -5,7 +5,8 @@ import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import PopupWithImage from './PopupWithImage.js';
 import EditProfilePopup from './EditProfilePopup.js';
-import { PopupEditAvatar, PopupEditProfile, PopupAddCard } from './PopupHTML.js';
+import EditAvatarPopup from './EditAvatarPopup.js';
+import AddCardPopup from './AddCardPopup.js';
 import { api } from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
@@ -17,14 +18,51 @@ function App() {
   const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(false);
 
+  const [cards, setCards] = React.useState([]);
+
+  //Используем хук для получения инфы о пользователе и карточек
   React.useEffect(() => {
-    api.getUserInfoFromServer()
-      .then((userData) => {
-        setCurrentUser(userData);
-      });
+    Promise.all([
+      api.getUserInfoFromServer(), //получаем данные о пользователе
+      api.getInitialCards() // Получаем массив карточек
+    ])
+      .then((data) => {
+        const [userData, cardsData] = data;
+        setCurrentUser(userData); //меняем состояние
+        setCards(cardsData); //меняем состояние
+      })
+      .catch((err) => { api.setErrorServer(err); });
   }, []);
 
-  {/*Обработчики открытия попапов*/ }
+  // Обработчик клика по лайку
+  function handleCardLike(card) {
+    // Проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some(like => like._id === currentUser._id);
+
+    // Отправляем запрос в API и получаем обновлённые данные карточки
+    api.changeLikeCardStatus(card, isLiked)
+      .then((newCard) => {
+        // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
+        const newCards = cards.map((c) => c._id === card._id ? newCard : c);
+        setCards(newCards);  // Обновляем стейт
+      })
+      .catch((err) => { api.setErrorServer(err); });
+  }
+
+  // Обработчик кнопки удаления карточки
+  function handleCardDelete(card) {
+    // Отправляем запрос в API и получаем обновлённые данные карточки
+    api.deleteCardToServer(card)
+      .then(() => {
+        // Формируем новый массив на основе имеющегося, если ИД совпадает с ИД 
+        // удаляемой карточки, то она не должна попасть в новый массив
+        const newCards = cards.filter((c) => c._id !== card._id && c);
+        setCards(newCards);  // Обновляем стейт
+      })
+      .catch((err) => { api.setErrorServer(err); });
+  }
+
+  // Обработчики открытия попапов
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -41,19 +79,43 @@ function App() {
     setSelectedCard(card);
   }
 
+  // Обработчик кнопки Сохранить в попапе редактирования профиля
   function handleUpdateUser(inputValues) {
     api.saveUserInfoToServer(inputValues)   // Сохраняем на сервере
-      .then((info) => { setCurrentUser(info) }) // Устанавливаем данные о пользователе на страницу
+      .then((userData) => { setCurrentUser(userData) }) // Устанавливаем данные о пользователе на страницу
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
         //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
-        closeAllPopups()
+        closeAllPopups();
         //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
-
   }
 
-  {/*Обработчик закрытия попапов*/ }
+  // Обработчик кнопки Сохранить в попапе редактирования аватара
+  function handleUpdateAvatar(avatar) {
+    api.saveAvatarToServer(avatar)   // Сохраняем на сервере
+      .then((userData) => { setCurrentUser(userData) }) // Устанавливаем данные о пользователе на страницу
+      .catch((err) => { api.setErrorServer(err); })
+      .finally(() => {
+        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        closeAllPopups();
+        //editProfileValidation.resetForm(); // Очищаем поля при Создании
+      });
+  }
+
+  // Обработчик кнопки Создать в попапе добавления карточки
+  function handleAddPlace(newCard) {
+    api.saveCardToServer(newCard)   // Сохраняем на сервере
+      .then((newCard) => { setCards([newCard, ...cards]) }) // Обновляем массив с карточками, добавляем загруженную
+      .catch((err) => { api.setErrorServer(err); })
+      .finally(() => {
+        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        closeAllPopups();
+        //editProfileValidation.resetForm(); // Очищаем поля при Создании
+      });
+  }
+
+  // Обработчик закрытия попапов
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
@@ -72,20 +134,19 @@ function App() {
           onEditAvatar={handleEditAvatarClick}
           onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick} // Обработчик клика по карточке
+          cards={cards}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
         />
 
         <Footer />
 
         {/*Создаем попап для аватара и передаем пропсы и обработчики*/}
-        <PopupWithForm
-          name="edit-avatar"
-          title="Обновить аватар"
-          btnName="Сохранить"
+        <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-        >
-          <PopupEditAvatar />
-        </PopupWithForm>
+          onUpdateAvatar={handleUpdateAvatar}
+        />
 
         {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
         <EditProfilePopup
@@ -95,15 +156,11 @@ function App() {
         />
 
         {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
-        <PopupWithForm
-          name="add-card"
-          title="Новое место"
-          btnName="Создать"
+        <AddCardPopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
-        >
-          <PopupAddCard />
-        </PopupWithForm>
+          onAddPlace={handleAddPlace}
+        />
 
         {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
         <PopupWithForm
