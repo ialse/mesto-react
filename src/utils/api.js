@@ -38,20 +38,13 @@ class Api {
         })
     }
 
-    // Лайк++
-    likeUpCardToServer(card) {
-        return fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
-            headers: this._headers,
-            method: 'PUT'
-        })
-            .then((res) => { return this._getResponseData(res); })
-    }
+    // Обновление лайка
+    changeLikeCardStatus(card, isLiked) {
+        const action = isLiked ? 'DELETE' : 'PUT';
 
-    // Лайк--
-    likeDownCardToServer(card) {
         return fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
             headers: this._headers,
-            method: 'DELETE'
+            method: action
         })
             .then((res) => { return this._getResponseData(res); })
     }
