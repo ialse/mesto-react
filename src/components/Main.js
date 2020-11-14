@@ -2,7 +2,14 @@ import React from 'react';
 import Card from './Card.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick, cards, onCardLike, onCardDelete }) {
+function Main({
+    onEditAvatar,
+    onEditProfile,
+    onAddPlace,
+    cards,
+    onCardClick,
+    onCardLike,
+    onCardDelete }) {
 
     const currentUser = React.useContext(CurrentUserContext); //Подписываемся на контекст
 

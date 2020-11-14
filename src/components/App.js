@@ -11,6 +11,7 @@ import { api } from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function App() {
+  // Устанавливаем стэйты
   const [currentUser, setCurrentUser] = React.useState({});
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -20,7 +21,7 @@ function App() {
 
   const [cards, setCards] = React.useState([]);
 
-  //Используем хук для получения инфы о пользователе и карточек
+  // Используем хук для получения инфы о пользователе и карточек
   React.useEffect(() => {
     Promise.all([
       api.getUserInfoFromServer(), //получаем данные о пользователе
@@ -62,27 +63,10 @@ function App() {
       .catch((err) => { api.setErrorServer(err); });
   }
 
-  // Обработчики открытия попапов
-  function handleEditAvatarClick() {
-    setIsEditAvatarPopupOpen(true);
-  }
-
-  function handleEditProfileClick() {
-    setIsEditProfilePopupOpen(true);
-  }
-
-  function handleAddPlaceClick() {
-    setIsAddPlacePopupOpen(true);
-  }
-
-  function handleCardClick(card) {
-    setSelectedCard(card);
-  }
-
   // Обработчик кнопки Сохранить в попапе редактирования профиля
   function handleUpdateUser(inputValues) {
     api.saveUserInfoToServer(inputValues)   // Сохраняем на сервере
-      .then((userData) => { setCurrentUser(userData) }) // Устанавливаем данные о пользователе на страницу
+      .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новые данные пользователя
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
         //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
@@ -94,7 +78,7 @@ function App() {
   // Обработчик кнопки Сохранить в попапе редактирования аватара
   function handleUpdateAvatar(avatar) {
     api.saveAvatarToServer(avatar)   // Сохраняем на сервере
-      .then((userData) => { setCurrentUser(userData) }) // Устанавливаем данные о пользователе на страницу
+      .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новый аватар
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
         //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
@@ -115,6 +99,23 @@ function App() {
       });
   }
 
+  // Обработчики открытия попапов
+  function handleEditAvatarClick() {
+    setIsEditAvatarPopupOpen(true);
+  }
+
+  function handleEditProfileClick() {
+    setIsEditProfilePopupOpen(true);
+  }
+
+  function handleAddPlaceClick() {
+    setIsAddPlacePopupOpen(true);
+  }
+
+  function handleCardClick(card) {
+    setSelectedCard(card);
+  }
+
   // Обработчик закрытия попапов
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
@@ -124,6 +125,7 @@ function App() {
   }
 
   return (
+    // Делаем доступным контекст currentUser
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
