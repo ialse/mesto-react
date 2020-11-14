@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputEditProfile, PopupAddCard } from './PopupHTML';
+import { InputEditProfile } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 

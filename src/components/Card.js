@@ -15,6 +15,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
             <img
                 className="element__image"
                 src={card.link}
+                alt={card.name}
                 onClick={() => onCardClick(card)}
             />
             <h2 className="element__title">{card.name}</h2>
