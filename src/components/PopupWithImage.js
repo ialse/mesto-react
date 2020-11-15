@@ -1,4 +1,6 @@
-function PopupWithImage({ card, onClose }) {
+import React from 'react';
+
+const PopupWithImage = React.memo(({ card, onClose }) => {
   return (
     <div className={`popup popup_image ${Object.keys(card).length && 'popup_opened'}`}>
       <form className="popup__container popup__container_image" name="popup__image" noValidate>
@@ -8,6 +10,6 @@ function PopupWithImage({ card, onClose }) {
       </form>
     </div>
   );
-}
+});
 
 export default PopupWithImage;

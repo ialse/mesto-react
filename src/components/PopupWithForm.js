@@ -1,4 +1,6 @@
-function PopupWithForm({ name, title, btnName, isOpen, onClose, onSubmit, children }) {
+import React from 'react';
+
+const PopupWithForm = React.memo(({ name, title, btnName, isOpen, onClose, onSubmit, children }) => {
   return (
     <div className={`popup popup__form_${name} ${isOpen ? 'popup_opened' : ''}`}>
       <form className="popup__form" name={`popup__form_${name}`} noValidate onSubmit={onSubmit}>
@@ -9,6 +11,6 @@ function PopupWithForm({ name, title, btnName, isOpen, onClose, onSubmit, childr
       </form>
     </div>
   );
-}
+});
 
 export default PopupWithForm;

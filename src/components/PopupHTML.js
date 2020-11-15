@@ -1,4 +1,6 @@
-export function InputEditAvatar({ onChange, avatarRef }) {
+import React from 'react';
+
+export const InputEditAvatar = React.memo(({ onChange, avatarRef }) => {
     return (
         <label className="popup__field">
             <input type="url" className="popup__input popup__input_link" id="link-input" name="link"
@@ -6,9 +8,9 @@ export function InputEditAvatar({ onChange, avatarRef }) {
             <span className="popup__error" id="link-input-error"></span>
         </label>
     );
-}
+});
 
-export function InputEditProfile({ inputName, inputAbout, onChange }) {
+export const InputEditProfile = React.memo(({ inputName, inputAbout, onChange }) => {
     return (
         <>
             <label className="popup__field">
@@ -23,9 +25,9 @@ export function InputEditProfile({ inputName, inputAbout, onChange }) {
             </label>
         </>
     );
-}
+});
 
-export function InputAddCard({ onChange }) {
+export const InputAddCard = React.memo(({ onChange }) => {
     return (
         <>
             <label className="popup__field">
@@ -40,4 +42,4 @@ export function InputAddCard({ onChange }) {
             </label>
         </>
     );
-}
+});

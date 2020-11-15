@@ -2,7 +2,7 @@ import React from 'react';
 import { InputAddCard } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 
-function AddCardPopup({ isOpen, onClose, onAddPlace }) {
+const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace }) => {
 
     const [place, setPlace] = React.useState("");
     const [link, setLink] = React.useState("");
@@ -38,6 +38,6 @@ function AddCardPopup({ isOpen, onClose, onAddPlace }) {
             />
         </PopupWithForm>
     );
-}
+});
 
 export default AddCardPopup;

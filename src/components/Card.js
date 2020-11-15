@@ -1,7 +1,7 @@
 import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Card({ card, onCardClick, onCardLike, onCardDelete }) {
+const Card = React.memo(({ card, onCardClick, onCardLike, onCardDelete }) => {
     const currentUser = React.useContext(CurrentUserContext);
 
     const isOwn = currentUser._id === card.owner._id;
@@ -35,6 +35,6 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
             ></button>
         </article>
     );
-}
+});
 
 export default Card;

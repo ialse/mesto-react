@@ -2,7 +2,8 @@ import React from 'react';
 import { InputEditAvatar } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
+
+const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar }) => {
 
     const avatarRef = React.useRef();
 
@@ -34,5 +35,6 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
         </PopupWithForm>
     );
 }
+);
 
 export default EditAvatarPopup;

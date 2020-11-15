@@ -3,7 +3,7 @@ import { InputEditProfile } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
+const EditProfilePopup = React.memo(({ isOpen, onClose, onUpdateUser }) => {
 
     const currentUser = React.useContext(CurrentUserContext);
     const [name, setName] = React.useState("");
@@ -46,6 +46,6 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
             />
         </PopupWithForm>
     );
-}
+});
 
 export default EditProfilePopup;
