@@ -3,7 +3,7 @@ import { InputEditAvatar } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 
 
-const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar }) => {
+const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading }) => {
 
     const avatarRef = React.useRef();
 
@@ -27,6 +27,7 @@ const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar }) => {
             isOpen={isOpen}
             onClose={onClose}
             onSubmit={handleSubmit}
+            isLoading={isLoading}
         >
             <InputEditAvatar
                 avatarRef={avatarRef}

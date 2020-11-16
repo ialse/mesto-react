@@ -9,7 +9,8 @@ const Main = React.memo(({
     cards,
     onCardClick,
     onCardLike,
-    onCardDelete }) => {
+    onCardDelete,
+    isLoading }) => {
 
     const currentUser = React.useContext(CurrentUserContext); //Подписываемся на контекст
 

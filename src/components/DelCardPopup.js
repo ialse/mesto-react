@@ -1,7 +1,7 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm.js';
 
-const DelCardPopup = React.memo(({ isOpen, onClose, onDelCard, card }) => {
+const DelCardPopup = React.memo(({ isOpen, onClose, onDelCard, card, isLoading }) => {
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -16,6 +16,7 @@ const DelCardPopup = React.memo(({ isOpen, onClose, onDelCard, card }) => {
             isOpen={isOpen}
             onClose={onClose}
             onSubmit={handleSubmit}
+            isLoading={isLoading}
         >
         </PopupWithForm>
     );

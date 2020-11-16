@@ -18,6 +18,7 @@
 @import url("../blocks/popup/popup.css");
 @import url("../blocks/block-action/block-action.css");
 @import url("../blocks/error-server/error-server.css");
+@import url("../blocks/spinner/spinner.css");
 
 /*Импорт модификаторов*/
 

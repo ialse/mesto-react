@@ -2,7 +2,7 @@ import React from 'react';
 import { InputAddCard } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 
-const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace }) => {
+const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading }) => {
 
     const [place, setPlace] = React.useState("");
     const [link, setLink] = React.useState("");
@@ -32,6 +32,7 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace }) => {
             isOpen={isOpen}
             onClose={onClose}
             onSubmit={handleAddPlaceSubmit}
+            isLoading={isLoading}
         >
             <InputAddCard
                 onChange={handleChange}

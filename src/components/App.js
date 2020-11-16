@@ -1,39 +1,48 @@
 import React from 'react';
-import Header from './Header.js';
-import Main from './Main.js';
-import Footer from './Footer.js';
-import PopupWithImage from './PopupWithImage.js';
-import EditProfilePopup from './EditProfilePopup.js';
-import EditAvatarPopup from './EditAvatarPopup.js';
-import AddCardPopup from './AddCardPopup.js';
-import DelCardPopup from './DelCardPopup.js';
-import { api } from '../utils/api.js';
+import Header from './Header';
+import Main from './Main';
+import Footer from './Footer';
+import PopupWithImage from './PopupWithImage';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddCardPopup from './AddCardPopup';
+import DelCardPopup from './DelCardPopup';
+import BlockAction from './BlockAction';
+
+import { api } from '../utils/api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function App() {
   // Устанавливаем стэйты
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState({}); // состояние пользователя
+
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false); //состояния попапов
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
-  const [cardToDel, setCardToDel] = React.useState({});
-  const [selectedCard, setSelectedCard] = React.useState({});
 
-  const [cards, setCards] = React.useState([]);
+  const [cardToDel, setCardToDel] = React.useState({}); // состояние карточки, которую удаляют
+  const [selectedCard, setSelectedCard] = React.useState({}); //состояние карточки, по которой кликнули
+  const [isLoading, setIsLoading] = React.useState(false); // состояние спиннера
+  const [isLoadingOpen, setIsLoadingOpen] = React.useState(false); /* состояние спиннера
+    при открытии сайта, иначе спиннер дублируется на блоке и на кнопке*/
+
+  const [cards, setCards] = React.useState([]); // состояние массива карточек
 
   // Используем хук для получения инфы о пользователе и карточек
   React.useEffect(() => {
+    setIsLoadingOpen(true);
     Promise.all([
       api.getUserInfoFromServer(), //получаем данные о пользователе
       api.getInitialCards() // Получаем массив карточек
     ])
       .then((data) => {
         const [userData, cardsData] = data;
-        setCurrentUser(userData); //меняем состояние
-        setCards(cardsData); //меняем состояние
+        setCurrentUser(userData); //меняем состояния 
+        setCards(cardsData);
+        setIsLoadingOpen(false);
       })
-      .catch((err) => { api.setErrorServer(err); });
+      .catch((err) => { api.setErrorServer(err); })
   }, []);
 
   // Обработчик клика по лайку
@@ -53,6 +62,7 @@ function App() {
 
   // Обработчик кнопки удаления карточки
   function handleCardDelete(cardToDel) {
+    setIsLoading(true); //ставим блок и спиннер
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api.deleteCardToServer(cardToDel)
       .then(() => {
@@ -63,7 +73,7 @@ function App() {
       })
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
-        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        setIsLoading(false);  //убираем блок и спиннер
         closeAllPopups();
         //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
@@ -71,11 +81,12 @@ function App() {
 
   // Обработчик кнопки Сохранить в попапе редактирования профиля
   function handleUpdateUser(inputValues) {
+    setIsLoading(true);
     api.saveUserInfoToServer(inputValues)   // Сохраняем на сервере
       .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новые данные пользователя
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
-        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        setIsLoading(false);
         closeAllPopups();
         //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
@@ -83,11 +94,12 @@ function App() {
 
   // Обработчик кнопки Сохранить в попапе редактирования аватара
   function handleUpdateAvatar(avatar) {
+    setIsLoading(true);
     api.saveAvatarToServer(avatar)   // Сохраняем на сервере
       .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новый аватар
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
-        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        setIsLoading(false);
         closeAllPopups();
         //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
@@ -95,11 +107,12 @@ function App() {
 
   // Обработчик кнопки Создать в попапе добавления карточки
   function handleAddPlace(newCard) {
+    setIsLoading(true);
     api.saveCardToServer(newCard)   // Сохраняем на сервере
       .then((newCard) => { setCards([newCard, ...cards]) }) // Обновляем массив с карточками, добавляем загруженную
       .catch((err) => { api.setErrorServer(err); })
       .finally(() => {
-        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        setIsLoading(false);
         closeAllPopups();
         //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
@@ -151,6 +164,7 @@ function App() {
           cards={cards}
           onCardLike={handleCardLike}
           onCardDelete={handleDelCardPopup}
+          isLoading={isLoading}
         />
 
         <Footer />
@@ -160,6 +174,7 @@ function App() {
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
+          isLoading={isLoading}
         />
 
         {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
@@ -167,6 +182,7 @@ function App() {
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
+          isLoading={isLoading}
         />
 
         {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
@@ -174,6 +190,7 @@ function App() {
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           onAddPlace={handleAddPlace}
+          isLoading={isLoading}
         />
 
         {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
@@ -182,6 +199,7 @@ function App() {
           onClose={closeAllPopups}
           onDelCard={handleCardDelete}
           card={cardToDel}
+          isLoading={isLoading}
         >
         </DelCardPopup>
 
@@ -190,6 +208,9 @@ function App() {
           card={selectedCard}
           onClose={closeAllPopups}
         />
+
+        {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}
+        {(isLoadingOpen || isLoading) && <BlockAction isLoadingOpen={isLoadingOpen} />}
 
       </div>
     </CurrentUserContext.Provider>
