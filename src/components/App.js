@@ -2,11 +2,11 @@ import React from 'react';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
-import PopupWithForm from './PopupWithForm.js';
 import PopupWithImage from './PopupWithImage.js';
 import EditProfilePopup from './EditProfilePopup.js';
 import EditAvatarPopup from './EditAvatarPopup.js';
 import AddCardPopup from './AddCardPopup.js';
+import DelCardPopup from './DelCardPopup.js';
 import { api } from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
@@ -17,6 +17,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
+  const [cardToDel, setCardToDel] = React.useState({});
   const [selectedCard, setSelectedCard] = React.useState({});
 
   const [cards, setCards] = React.useState([]);
@@ -51,16 +52,21 @@ function App() {
   }
 
   // Обработчик кнопки удаления карточки
-  function handleCardDelete(card) {
+  function handleCardDelete(cardToDel) {
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.deleteCardToServer(card)
+    api.deleteCardToServer(cardToDel)
       .then(() => {
         // Формируем новый массив на основе имеющегося, если ИД совпадает с ИД 
         // удаляемой карточки, то она не должна попасть в новый массив
-        const newCards = cards.filter((c) => c._id !== card._id && c);
+        const newCards = cards.filter((c) => c._id !== cardToDel._id && c);
         setCards(newCards);  // Обновляем стейт
       })
-      .catch((err) => { api.setErrorServer(err); });
+      .catch((err) => { api.setErrorServer(err); })
+      .finally(() => {
+        //popupEditProfile.loadEnd();     //Снимаем блок и меняем название кнопки на начальное
+        closeAllPopups();
+        //editProfileValidation.resetForm(); // Очищаем поля при Создании
+      });
   }
 
   // Обработчик кнопки Сохранить в попапе редактирования профиля
@@ -112,6 +118,11 @@ function App() {
     setIsAddPlacePopupOpen(true);
   }
 
+  function handleDelCardPopup(card) {
+    setIsDelCardPopupOpen(true);
+    setCardToDel(card);
+  }
+
   function handleCardClick(card) {
     setSelectedCard(card);
   }
@@ -121,6 +132,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setIsDelCardPopupOpen(false);
     setSelectedCard({});
   }
 
@@ -138,7 +150,7 @@ function App() {
           onCardClick={handleCardClick} // Обработчик клика по карточке
           cards={cards}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
+          onCardDelete={handleDelCardPopup}
         />
 
         <Footer />
@@ -165,14 +177,13 @@ function App() {
         />
 
         {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
-        <PopupWithForm
-          name="confirm-delete"
-          title="Вы уверены?"
-          btnName="Да"
+        <DelCardPopup
           isOpen={isDelCardPopupOpen}
           onClose={closeAllPopups}
+          onDelCard={handleCardDelete}
+          card={cardToDel}
         >
-        </PopupWithForm>
+        </DelCardPopup>
 
         {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
         <PopupWithImage
