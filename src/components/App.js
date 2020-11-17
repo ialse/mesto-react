@@ -29,6 +29,55 @@ function App() {
 
   const [cards, setCards] = React.useState([]); // состояние массива карточек
 
+  function handleValidation(inputValues) {
+    //должна получить поля и проверки по ним
+    //
+    //должна вернуть результат валидации и текст ошибки
+
+    const validators = {
+      name: {
+        required: (value) => { return value === '' },
+        minLength: (value) => { return value.length < 2 }
+      },
+      about: {
+        required: (value) => { return value === '' },
+        minLength: (value) => { return value.length < 2 }
+      },
+      link: {
+        required: (value) => { return value === '' },
+        minLength: (value) => { return value.length < 2 }
+      }
+    };
+
+    // Преобразовывем объект с полями в объект с булевыми значениями и возвращаем этот объект
+    const formKeys = Object.keys(inputValues);
+    const allErrors = formKeys.map((key) => {
+      const valueByKey = inputValues[key];
+
+      if (!validators[key]) return {};
+
+      const errors = Object.entries(validators[key]).map(([errorKey, validatorFn]) => {
+
+        return { [errorKey]: validatorFn(valueByKey) };
+      }).reduce((acc, item) => ({ ...acc, ...item }), {});
+
+      return { [key]: errors };
+    }).reduce((acc, item) => ({ ...acc, ...item }), {});
+
+    // Если хоть одна проверка возвращает true, то блокируем кнопку
+    let isInvalid = false;
+    for (const keyInput in allErrors) {
+      for (const keyCheck in allErrors[keyInput]) {
+        if (allErrors[keyInput][keyCheck]) {
+          isInvalid = true;
+          break;
+        }
+      }
+    }
+
+    return { allErrors, isInvalid };
+  }
+
   // Используем хук для получения инфы о пользователе и карточек
   React.useEffect(() => {
     setIsLoadingOpen(true);
@@ -183,6 +232,7 @@ function App() {
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
           isLoading={isLoading}
+          onValidation={handleValidation}
         />
 
         {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
@@ -191,6 +241,7 @@ function App() {
           onClose={closeAllPopups}
           onAddPlace={handleAddPlace}
           isLoading={isLoading}
+          onValidation={handleValidation}
         />
 
         {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
