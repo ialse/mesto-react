@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -16,20 +16,27 @@ import { StatePopup } from '../contexts/StatePopup';
 
 function App() {
   // Устанавливаем стэйты
-  const [currentUser, setCurrentUser] = React.useState({}); // состояние пользователя
+  const [currentUser, setCurrentUser] = useState({}); // состояние пользователя
 
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false); //состояния попапов
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isDelCardPopupOpen, setIsDelCardPopupOpen] = React.useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false); //состояния попапов
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isDelCardPopupOpen, setIsDelCardPopupOpen] = useState(false);
 
-  const [cardToDel, setCardToDel] = React.useState({}); // состояние карточки, которую удаляют
-  const [selectedCard, setSelectedCard] = React.useState({}); //состояние карточки, по которой кликнули
-  const [isLoading, setIsLoading] = React.useState(false); // состояние спиннера
-  const [isLoadingOpen, setIsLoadingOpen] = React.useState(false); /* состояние спиннера
+  const [cardToDel, setCardToDel] = useState({}); // состояние карточки, которую удаляют
+  const [selectedCard, setSelectedCard] = useState({}); //состояние карточки, по которой кликнули
+  const [isLoading, setIsLoading] = useState(false); // состояние спиннера
+  const [isLoadingOpen, setIsLoadingOpen] = useState(false); /* состояние спиннера
     при открытии сайта, иначе спиннер дублируется на блоке и на кнопке*/
 
-  const [cards, setCards] = React.useState([]); // состояние массива карточек
+  const [cards, setCards] = useState([]); // состояние массива карточек
+
+  // рефы на попапы для клика по оверлею
+  const editProfileRef = useRef();
+  const editAvatarRef = useRef();
+  const addCardRef = useRef();
+  const delCardRef = useRef();
+  const imageRef = useRef();
 
   // Общая валидация для полей
   function handleValidation(inputValues) {
@@ -67,7 +74,7 @@ function App() {
   }
 
   // Используем хук для получения инфы о пользователе и карточек
-  React.useEffect(() => {
+  useEffect(() => {
     setIsLoadingOpen(true);
     Promise.all([
       api.getUserInfoFromServer(), //получаем данные о пользователе
@@ -177,6 +184,25 @@ function App() {
     setSelectedCard(card);
   }
 
+  // Обработчик нажатия Esc
+  function handleEsc(e) {
+    if (e.key === "Escape") {
+      closeAllPopups();
+    }
+  }
+
+  // Обработчик клика по оверлею при открытом попапе
+  function handleClickOverlay(e) {
+    if (
+      e.target === editProfileRef.current ||
+      e.target === editAvatarRef.current ||
+      e.target === addCardRef.current ||
+      e.target === delCardRef.current ||
+      e.target === imageRef.current) {
+      closeAllPopups();
+    }
+  }
+
   // Обработчик закрытия попапов
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
@@ -197,7 +223,7 @@ function App() {
     // Делаем доступным контекст currentUser и состояние попапов
     <StatePopup.Provider value={popupStateContext}>
       <CurrentUserContext.Provider value={currentUser}>
-        <div className="page">
+        <div className="page" onKeyUp={handleEsc} onClick={handleClickOverlay} >
           <Header />
 
           {/*Создаем компонент Main и передаем обработчики через пропсы*/}
@@ -221,6 +247,7 @@ function App() {
             onUpdateAvatar={handleUpdateAvatar}
             isLoading={isLoading}
             onValidation={handleValidation}
+            popupRef={editAvatarRef}
           />
 
           {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
@@ -230,6 +257,7 @@ function App() {
             onUpdateUser={handleUpdateUser}
             isLoading={isLoading}
             onValidation={handleValidation}
+            popupRef={editProfileRef}
           />
 
           {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
@@ -239,6 +267,7 @@ function App() {
             onAddPlace={handleAddPlace}
             isLoading={isLoading}
             onValidation={handleValidation}
+            popupRef={addCardRef}
           />
 
           {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
@@ -248,6 +277,7 @@ function App() {
             onDelCard={handleCardDelete}
             card={cardToDel}
             isLoading={isLoading}
+            popupRef={delCardRef}
           >
           </DelCardPopup>
 
@@ -255,6 +285,7 @@ function App() {
           <PopupWithImage
             card={selectedCard}
             onClose={closeAllPopups}
+            popupRef={imageRef}
           />
 
           {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}

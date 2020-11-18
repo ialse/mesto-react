@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, memo } from 'react';
 import { InputEditAvatar } from './PopupHTML';
 import PopupWithForm from './PopupWithForm';
 import { StatePopup } from '../contexts/StatePopup';
 
-const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading, onValidation }) => {
+const EditAvatarPopup = memo(({ isOpen, onClose, onUpdateAvatar, isLoading, onValidation, popupRef }) => {
 
     // Использую контекст, чтобы понимать когда попап закрывают и очищать поля
     const { isEditAvatarPopupOpen } = useContext(StatePopup);
@@ -31,6 +31,7 @@ const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading
         });
     }
 
+    // Обработчик ввода данных в поля
     function handleChange(e) {
 
         const { name, value } = e.target;
@@ -65,6 +66,7 @@ const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading
             onSubmit={handleSubmit}
             isLoading={isLoading}
             isInvalid={isInvalid}
+            popupRef={popupRef}
         >
             <InputEditAvatar
                 avatarRef={avatarRef}

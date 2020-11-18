@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useContext, memo } from 'react';
 import Card from './Card.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-const Main = React.memo(({
+const Main = memo(({
     onEditAvatar,
     onEditProfile,
     onAddPlace,
     cards,
     onCardClick,
     onCardLike,
-    onCardDelete,
-    isLoading }) => {
+    onCardDelete
+}) => {
 
-    const currentUser = React.useContext(CurrentUserContext); //Подписываемся на контекст
+    const currentUser = useContext(CurrentUserContext); //Подписываемся на контекст
 
     return (
         <main className="content">

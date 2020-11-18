@@ -3,7 +3,7 @@ import { InputAddCard } from './PopupHTML';
 import PopupWithForm from './PopupWithForm';
 import { StatePopup } from '../contexts/StatePopup';
 
-const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onValidation }) => {
+const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onValidation, popupRef }) => {
 
     // Использую контекст, чтобы понимать когда попап закрывают и очищать поля
     const { isAddPlacePopupOpen } = useContext(StatePopup);
@@ -30,8 +30,6 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             name: place,
             link
         });
-
-        console.log(isAddPlacePopupOpen);
     }
 
     // Обработчик ввода данных в поля
@@ -79,6 +77,7 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             onSubmit={handleAddPlaceSubmit}
             isLoading={isLoading}
             isInvalid={isInvalid}
+            popupRef={popupRef}
         >
             <InputAddCard
                 onChange={handleChange}

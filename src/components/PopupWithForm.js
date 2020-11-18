@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const PopupWithForm = React.memo(({ name, title, btnName, isOpen, onClose, onSubmit, children, isLoading, isInvalid }) => {
+const PopupWithForm = memo(({ name, title, btnName, isOpen, onClose, onSubmit, children, isLoading, isInvalid, popupRef }) => {
   return (
-    <div className={`popup popup__form_${name} ${isOpen ? 'popup_opened' : ''}`}>
+    <div className={`popup popup__form_${name} ${isOpen ? 'popup_opened' : ''}`} ref={popupRef}>
       <form className="popup__form" name={`popup__form_${name}`} noValidate onSubmit={onSubmit} >
         <h2 className="popup__title">{title}</h2>
         {children}

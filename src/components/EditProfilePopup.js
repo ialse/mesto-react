@@ -4,7 +4,7 @@ import PopupWithForm from './PopupWithForm';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { StatePopup } from '../contexts/StatePopup';
 
-const EditProfilePopup = React.memo(({ isOpen, onClose, onUpdateUser, isLoading, onValidation }) => {
+const EditProfilePopup = React.memo(({ isOpen, onClose, onUpdateUser, isLoading, onValidation, popupRef }) => {
 
     // Использую контекст, чтобы понимать когда попап закрывают и очищать поля
     const { isEditProfilePopupOpen } = useContext(StatePopup);
@@ -59,7 +59,7 @@ const EditProfilePopup = React.memo(({ isOpen, onClose, onUpdateUser, isLoading,
             });
         }
 
-    }, [isEditProfilePopupOpen]);
+    }, [isEditProfilePopupOpen, currentUser]);
 
     // Вызов валидации полей при каждом изменении formValues
     useEffect(() => {
@@ -79,6 +79,7 @@ const EditProfilePopup = React.memo(({ isOpen, onClose, onUpdateUser, isLoading,
             onSubmit={handleSubmit}
             isLoading={isLoading}
             isInvalid={isInvalid}
+            popupRef={popupRef}
         >
             <InputEditProfile
                 inputName={name}

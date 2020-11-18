@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useContext, memo } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-const Card = React.memo(({ card, onCardClick, onCardLike, onCardDelete }) => {
-    const currentUser = React.useContext(CurrentUserContext);
+const Card = memo(({ card, onCardClick, onCardLike, onCardDelete }) => {
+    const currentUser = useContext(CurrentUserContext);
 
     const isOwn = currentUser._id === card.owner._id;
     const cardButtonRemoveClassName = `element__button-remove ${isOwn && 'element__button-remove_active'}`;

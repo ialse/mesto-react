@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export const InputEditAvatar = React.memo(({ onChange, avatarRef, error }) => {
+export const InputEditAvatar = memo(({ onChange, avatarRef, error }) => {
     return (
         <label className="popup__field">
             <input type="url" className="popup__input popup__input_link" id="link-input" name="link"
@@ -13,7 +13,7 @@ export const InputEditAvatar = React.memo(({ onChange, avatarRef, error }) => {
     );
 });
 
-export const InputEditProfile = React.memo(({ inputName, inputAbout, onChange, error }) => {
+export const InputEditProfile = memo(({ inputName, inputAbout, onChange, error }) => {
     return (
         <>
             <label className="popup__field">
@@ -36,7 +36,7 @@ export const InputEditProfile = React.memo(({ inputName, inputAbout, onChange, e
     );
 });
 
-export const InputAddCard = React.memo(({ onChange, error, placeRef, linkRef }) => {
+export const InputAddCard = memo(({ onChange, error, placeRef, linkRef }) => {
     return (
         <>
             <label className="popup__field">
