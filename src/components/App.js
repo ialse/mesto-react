@@ -10,6 +10,7 @@ import DelCardPopup from './DelCardPopup';
 import BlockAction from './BlockAction';
 
 import { api } from '../utils/api';
+import { validators } from '../utils/validators';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function App() {
@@ -33,21 +34,6 @@ function App() {
     //должна получить поля и проверки по ним
     //
     //должна вернуть результат валидации и текст ошибки
-
-    const validators = {
-      name: {
-        required: (value) => { return value === '' },
-        minLength: (value) => { return value.length < 2 }
-      },
-      about: {
-        required: (value) => { return value === '' },
-        minLength: (value) => { return value.length < 2 }
-      },
-      link: {
-        required: (value) => { return value === '' },
-        minLength: (value) => { return value.length < 2 }
-      }
-    };
 
     // Преобразовывем объект с полями в объект с булевыми значениями и возвращаем этот объект
     const formKeys = Object.keys(inputValues);
@@ -224,6 +210,7 @@ function App() {
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
           isLoading={isLoading}
+          onValidation={handleValidation}
         />
 
         {/*Создаем попап для профиля и передаем пропсы и обработчики*/}

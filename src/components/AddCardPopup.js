@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputAddCard } from './PopupHTML';
 import PopupWithForm from './PopupWithForm.js';
 
 const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onValidation }) => {
 
-    const [place, setPlace] = React.useState("");
-    const [link, setLink] = React.useState("");
+    const [place, setPlace] = useState("");
+    const [link, setLink] = useState("");
 
     const [formValues, setFormValues] = useState({
         name: '',
@@ -36,7 +36,8 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             setLink(e.target.value);
     }
 
-    React.useEffect(() => {
+    // Валидируем при каждом измении данных в полях, formValues
+    useEffect(() => {
         // в res должен вернуться результат валидации и текст ошибки
         const { allErrors, isInvalid } = onValidation(formValues);
         setError(() => { return allErrors });
