@@ -12,6 +12,7 @@ import BlockAction from './BlockAction';
 import { api } from '../utils/api';
 import { validators } from '../utils/validators';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { StatePopup } from '../contexts/StatePopup';
 
 function App() {
   // Устанавливаем стэйты
@@ -30,6 +31,7 @@ function App() {
 
   const [cards, setCards] = React.useState([]); // состояние массива карточек
 
+  // Общая валидация для полей
   function handleValidation(inputValues) {
     //должна получить поля и проверки по ним
     //
@@ -184,74 +186,83 @@ function App() {
     setSelectedCard({});
   }
 
+  // Объект с состояниями попапов
+  const popupStateContext = {
+    isEditProfilePopupOpen,
+    isEditAvatarPopupOpen,
+    isAddPlacePopupOpen
+  }
+
   return (
-    // Делаем доступным контекст currentUser
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        <Header />
+    // Делаем доступным контекст currentUser и состояние попапов
+    <StatePopup.Provider value={popupStateContext}>
+      <CurrentUserContext.Provider value={currentUser}>
+        <div className="page">
+          <Header />
 
-        {/*Создаем компонент Main и передаем обработчики через пропсы*/}
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onEditAvatar={handleEditAvatarClick}
-          onAddPlace={handleAddPlaceClick}
-          onCardClick={handleCardClick} // Обработчик клика по карточке
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleDelCardPopup}
-          isLoading={isLoading}
-        />
+          {/*Создаем компонент Main и передаем обработчики через пропсы*/}
+          <Main
+            onEditProfile={handleEditProfileClick}
+            onEditAvatar={handleEditAvatarClick}
+            onAddPlace={handleAddPlaceClick}
+            onCardClick={handleCardClick} // Обработчик клика по карточке
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleDelCardPopup}
+            isLoading={isLoading}
+          />
 
-        <Footer />
+          <Footer />
 
-        {/*Создаем попап для аватара и передаем пропсы и обработчики*/}
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-          isLoading={isLoading}
-          onValidation={handleValidation}
-        />
+          {/*Создаем попап для аватара и передаем пропсы и обработчики*/}
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+            isLoading={isLoading}
+            onValidation={handleValidation}
+          />
 
-        {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}
-          isLoading={isLoading}
-          onValidation={handleValidation}
-        />
+          {/*Создаем попап для профиля и передаем пропсы и обработчики*/}
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+            isLoading={isLoading}
+            onValidation={handleValidation}
+          />
 
-        {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
-        <AddCardPopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlace}
-          isLoading={isLoading}
-          onValidation={handleValidation}
-        />
+          {/*Создаем попап для новой карточки и передаем пропсы и обработчики*/}
+          <AddCardPopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlace}
+            isLoading={isLoading}
+            onValidation={handleValidation}
+          />
 
-        {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
-        <DelCardPopup
-          isOpen={isDelCardPopupOpen}
-          onClose={closeAllPopups}
-          onDelCard={handleCardDelete}
-          card={cardToDel}
-          isLoading={isLoading}
-        >
-        </DelCardPopup>
+          {/*Создаем попап для подтверждения удаления карточки и передаем пропсы и обработчики*/}
+          <DelCardPopup
+            isOpen={isDelCardPopupOpen}
+            onClose={closeAllPopups}
+            onDelCard={handleCardDelete}
+            card={cardToDel}
+            isLoading={isLoading}
+          >
+          </DelCardPopup>
 
-        {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
-        <PopupWithImage
-          card={selectedCard}
-          onClose={closeAllPopups}
-        />
+          {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
+          <PopupWithImage
+            card={selectedCard}
+            onClose={closeAllPopups}
+          />
 
-        {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}
-        {(isLoadingOpen || isLoading) && <BlockAction isLoadingOpen={isLoadingOpen} />}
+          {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}
+          {(isLoadingOpen || isLoading) && <BlockAction isLoadingOpen={isLoadingOpen} />}
 
-      </div>
-    </CurrentUserContext.Provider>
+        </div>
+      </CurrentUserContext.Provider>
+    </StatePopup.Provider>
   );
 }
 

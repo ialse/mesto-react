@@ -1,11 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { InputEditAvatar } from './PopupHTML';
-import PopupWithForm from './PopupWithForm.js';
+import PopupWithForm from './PopupWithForm';
+import { StatePopup } from '../contexts/StatePopup';
 
 const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading, onValidation }) => {
 
+    // Использую контекст, чтобы понимать когда попап закрывают и очищать поля
+    const { isEditAvatarPopupOpen } = useContext(StatePopup);
     const avatarRef = useRef();
 
+    // Стейты для валидации полей
     const [formValues, setFormValues] = useState({
         link: ''
     });
@@ -13,10 +17,17 @@ const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading
     const [error, setError] = useState({});
     const [isInvalid, setIsInvalid] = useState(true);
 
+    // Обработчик ввода данных в поля
     function handleSubmit(e) {
         e.preventDefault();
         onUpdateAvatar({
             link: avatarRef.current.value /* Значение инпута, полученное с помощью рефа */
+        });
+
+        // очищаю поле после нажатия Сохранить
+        avatarRef.current.value = '';
+        setFormValues({
+            link: ''
         });
     }
 
@@ -27,6 +38,13 @@ const EditAvatarPopup = React.memo(({ isOpen, onClose, onUpdateAvatar, isLoading
         //обновляем значение поля после каждого ввода символа
         avatarRef.current.value = e.target.value;
     }
+
+    // Если попап закрыли, то очищаем поля, если открыли, устанавливаем
+    useEffect(() => {
+        if (isEditAvatarPopupOpen) {
+            avatarRef.current.value = '';
+        }
+    }, [isEditAvatarPopupOpen]);
 
     // Валидируем при каждом измении данных в полях, formValues
     useEffect(() => {

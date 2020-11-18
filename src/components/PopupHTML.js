@@ -36,12 +36,12 @@ export const InputEditProfile = React.memo(({ inputName, inputAbout, onChange, e
     );
 });
 
-export const InputAddCard = React.memo(({ onChange, error }) => {
+export const InputAddCard = React.memo(({ onChange, error, placeRef, linkRef }) => {
     return (
         <>
             <label className="popup__field">
                 <input type="text" className="popup__input popup__input_place" id="title-input" name="name" placeholder="Название"
-                    minLength="1" maxLength="30" onChange={onChange} />
+                    minLength="1" maxLength="30" onChange={onChange} ref={placeRef} />
                 <span className="popup__error popup__error_visible" id="title-input-error">
                     {(Object.keys(error).length && error.name.required && 'Заполните это поле.') ||
                         (Object.keys(error).length && error.name.minLength && 'Текст должен быть не короче 2 символов')}
@@ -49,7 +49,7 @@ export const InputAddCard = React.memo(({ onChange, error }) => {
             </label>
             <label className="popup__field">
                 <input type="url" className="popup__input popup__input_link" id="link-input" name="link"
-                    placeholder="Ссылка на картинку" onChange={onChange} />
+                    placeholder="Ссылка на картинку" onChange={onChange} ref={linkRef} />
                 <span className="popup__error popup__error_visible" id="link-input-error">
                     {(Object.keys(error).length && error.link.required && 'Заполните это поле.') ||
                         (Object.keys(error).length && error.link.http && 'Введите URL.')}

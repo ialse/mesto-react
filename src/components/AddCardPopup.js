@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { InputAddCard } from './PopupHTML';
-import PopupWithForm from './PopupWithForm.js';
+import PopupWithForm from './PopupWithForm';
+import { StatePopup } from '../contexts/StatePopup';
 
 const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onValidation }) => {
 
-    const [place, setPlace] = useState("");
-    const [link, setLink] = useState("");
+    // Использую контекст, чтобы понимать когда попап закрывают и очищать поля
+    const { isAddPlacePopupOpen } = useContext(StatePopup);
 
+    const placeRef = useRef();
+    const linkRef = useRef();
+
+    const [place, setPlace] = useState('');
+    const [link, setLink] = useState('');
+
+    // Стейты для валидации полей
     const [formValues, setFormValues] = useState({
         name: '',
         link: ''
@@ -22,8 +30,11 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             name: place,
             link
         });
+
+        console.log(isAddPlacePopupOpen);
     }
 
+    // Обработчик ввода данных в поля
     function handleChange(e) {
 
         const { name, value } = e.target;
@@ -36,9 +47,22 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             setLink(e.target.value);
     }
 
-    // Валидируем при каждом измении данных в полях, formValues
+    // Если попап закрыли, то очищаем поля, если открыли, устанавливаем
     useEffect(() => {
-        // в res должен вернуться результат валидации и текст ошибки
+
+        if (isAddPlacePopupOpen) {
+            placeRef.current.value = '';
+            linkRef.current.value = '';
+            setFormValues({
+                name: '',
+                link: ''
+            });
+        }
+
+    }, [isAddPlacePopupOpen]);
+
+    // Вызов валидации полей при каждом изменении formValues
+    useEffect(() => {
         const { allErrors, isInvalid } = onValidation(formValues);
         setError(() => { return allErrors });
         setIsInvalid(isInvalid);
@@ -59,6 +83,8 @@ const AddCardPopup = React.memo(({ isOpen, onClose, onAddPlace, isLoading, onVal
             <InputAddCard
                 onChange={handleChange}
                 error={error}
+                placeRef={placeRef}
+                linkRef={linkRef}
             />
         </PopupWithForm>
     );
