@@ -40,9 +40,6 @@ function App() {
 
   // Общая валидация для полей
   function handleValidation(inputValues) {
-    //должна получить поля и проверки по ним
-    //
-    //должна вернуть результат валидации и текст ошибки
 
     // Преобразовывем объект с полями в объект с булевыми значениями и возвращаем этот объект
     const formKeys = Object.keys(inputValues);
@@ -119,7 +116,6 @@ function App() {
       .finally(() => {
         setIsLoading(false);  //убираем блок и спиннер
         closeAllPopups();
-        //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
   }
 
@@ -132,7 +128,6 @@ function App() {
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
-        //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
   }
 
@@ -145,7 +140,6 @@ function App() {
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
-        //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
   }
 
@@ -158,7 +152,6 @@ function App() {
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
-        //editProfileValidation.resetForm(); // Очищаем поля при Создании
       });
   }
 
