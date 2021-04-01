@@ -92,17 +92,6 @@ class Api {
       return this._getResponseData(res);
     });
   }
-
-  // Вывод ошибки запроса к серверу на страницу
-  setErrorServer(err) {
-    console.log(this._errorServer);
-    this._errorServer.textContent = `Ошибка при соединение с сервером: ${err}. Попробуйте повторить позже`;
-
-    this._errorServer.classList.add("error-server_active");
-    setTimeout(() => {
-      this._errorServer.classList.remove("error-server_active");
-    }, 8000);
-  }
 }
 
 export const api = new Api({
