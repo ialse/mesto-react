@@ -1,18 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Header from './Header';
-import Main from './Main';
-import Footer from './Footer';
-import PopupWithImage from './PopupWithImage';
-import EditProfilePopup from './EditProfilePopup';
-import EditAvatarPopup from './EditAvatarPopup';
-import AddCardPopup from './AddCardPopup';
-import DelCardPopup from './DelCardPopup';
-import BlockAction from './BlockAction';
+import React, { useEffect, useRef, useState } from "react";
+import Header from "./Header";
+import Main from "./Main";
+import Footer from "./Footer";
+import PopupWithImage from "./PopupWithImage";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddCardPopup from "./AddCardPopup";
+import DelCardPopup from "./DelCardPopup";
+import BlockAction from "./BlockAction";
+import MessageError from "./MessageError";
 
-import { api } from '../utils/api';
-import { validators } from '../utils/validators';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { StatePopup } from '../contexts/StatePopup';
+import { api } from "../utils/api";
+import { validators } from "../utils/validators";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { StatePopup } from "../contexts/StatePopup";
 
 function App() {
   // Устанавливаем стэйты
@@ -23,10 +24,18 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isDelCardPopupOpen, setIsDelCardPopupOpen] = useState(false);
 
+  // Сообщение об ошибке
+  const [isError, setIsError] = useState({
+    is: false,
+    textError: "",
+  });
+
   const [cardToDel, setCardToDel] = useState({}); // состояние карточки, которую удаляют
   const [selectedCard, setSelectedCard] = useState({}); //состояние карточки, по которой кликнули
   const [isLoading, setIsLoading] = useState(false); // состояние спиннера
-  const [isLoadingOpen, setIsLoadingOpen] = useState(false); /* состояние спиннера
+  const [isLoadingOpen, setIsLoadingOpen] = useState(
+    false
+  ); /* состояние спиннера
     при открытии сайта, иначе спиннер дублируется на блоке и на кнопке*/
 
   const [cards, setCards] = useState([]); // состояние массива карточек
@@ -40,21 +49,23 @@ function App() {
 
   // Общая валидация для полей
   function handleValidation(inputValues) {
-
     // Преобразовывем объект с полями в объект с булевыми значениями и возвращаем этот объект
     const formKeys = Object.keys(inputValues);
-    const allErrors = formKeys.map((key) => {
-      const valueByKey = inputValues[key];
+    const allErrors = formKeys
+      .map((key) => {
+        const valueByKey = inputValues[key];
 
-      if (!validators[key]) return {};
+        if (!validators[key]) return {};
 
-      const errors = Object.entries(validators[key]).map(([errorKey, validatorFn]) => {
+        const errors = Object.entries(validators[key])
+          .map(([errorKey, validatorFn]) => {
+            return { [errorKey]: validatorFn(valueByKey) };
+          })
+          .reduce((acc, item) => ({ ...acc, ...item }), {});
 
-        return { [errorKey]: validatorFn(valueByKey) };
-      }).reduce((acc, item) => ({ ...acc, ...item }), {});
-
-      return { [key]: errors };
-    }).reduce((acc, item) => ({ ...acc, ...item }), {});
+        return { [key]: errors };
+      })
+      .reduce((acc, item) => ({ ...acc, ...item }), {});
 
     // Если хоть одна проверка возвращает true, то блокируем кнопку
     let isInvalid = false;
@@ -75,46 +86,63 @@ function App() {
     setIsLoadingOpen(true);
     Promise.all([
       api.getUserInfoFromServer(), //получаем данные о пользователе
-      api.getInitialCards() // Получаем массив карточек
+      api.getInitialCards(), // Получаем массив карточек
     ])
       .then((data) => {
         const [userData, cardsData] = data;
-        setCurrentUser(userData); //меняем состояния 
+        setCurrentUser(userData); //меняем состояния
         setCards(cardsData);
         setIsLoadingOpen(false);
       })
-      .catch((err) => { api.setErrorServer(err); })
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      });
   }, []);
 
   // Обработчик клика по лайку
   function handleCardLike(card) {
     // Проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some(like => like._id === currentUser._id);
+    const isLiked = card.likes.some((like) => like._id === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.changeLikeCardStatus(card, isLiked)
+    api
+      .changeLikeCardStatus(card, isLiked)
       .then((newCard) => {
         // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
-        const newCards = cards.map((c) => c._id === card._id ? newCard : c);
-        setCards(newCards);  // Обновляем стейт
+        const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
+        setCards(newCards); // Обновляем стейт
       })
-      .catch((err) => { api.setErrorServer(err); });
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      });
   }
 
   // Обработчик кнопки удаления карточки
   function handleCardDelete(cardToDel) {
     setIsLoading(true); //ставим блок и спиннер
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.deleteCardToServer(cardToDel)
+    api
+      .deleteCardToServer(cardToDel)
       .then(() => {
-        // Формируем новый массив на основе имеющегося, если ИД совпадает с ИД 
+        // Формируем новый массив на основе имеющегося, если ИД совпадает с ИД
         // удаляемой карточки, то она не должна попасть в новый массив
         const newCards = cards.filter((c) => c._id !== cardToDel._id && c);
-        setCards(newCards);  // Обновляем стейт
+        setCards(newCards); // Обновляем стейт
       })
-      .catch((err) => { api.setErrorServer(err); })
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      })
       .finally(() => {
-        setIsLoading(false);  //убираем блок и спиннер
+        setIsLoading(false); //убираем блок и спиннер
         closeAllPopups();
       });
   }
@@ -122,9 +150,17 @@ function App() {
   // Обработчик кнопки Сохранить в попапе редактирования профиля
   function handleUpdateUser(inputValues) {
     setIsLoading(true);
-    api.saveUserInfoToServer(inputValues)   // Сохраняем на сервере
-      .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новые данные пользователя
-      .catch((err) => { api.setErrorServer(err); })
+    api
+      .saveUserInfoToServer(inputValues) // Сохраняем на сервере
+      .then((userData) => {
+        setCurrentUser(userData);
+      }) // устанавливаем новый стэйт: новые данные пользователя
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      })
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
@@ -134,9 +170,17 @@ function App() {
   // Обработчик кнопки Сохранить в попапе редактирования аватара
   function handleUpdateAvatar(avatar) {
     setIsLoading(true);
-    api.saveAvatarToServer(avatar)   // Сохраняем на сервере
-      .then((userData) => { setCurrentUser(userData) }) // устанавливаем новый стэйт: новый аватар
-      .catch((err) => { api.setErrorServer(err); })
+    api
+      .saveAvatarToServer(avatar) // Сохраняем на сервере
+      .then((userData) => {
+        setCurrentUser(userData);
+      }) // устанавливаем новый стэйт: новый аватар
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      })
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
@@ -146,9 +190,17 @@ function App() {
   // Обработчик кнопки Создать в попапе добавления карточки
   function handleAddPlace(newCard) {
     setIsLoading(true);
-    api.saveCardToServer(newCard)   // Сохраняем на сервере
-      .then((newCard) => { setCards([newCard, ...cards]) }) // Обновляем массив с карточками, добавляем загруженную
-      .catch((err) => { api.setErrorServer(err); })
+    api
+      .saveCardToServer(newCard) // Сохраняем на сервере
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+      }) // Обновляем массив с карточками, добавляем загруженную
+      .catch((err) => {
+        setIsError({
+          is: true,
+          textError: err.message ? err.message : "Ошибка",
+        });
+      })
       .finally(() => {
         setIsLoading(false);
         closeAllPopups();
@@ -191,7 +243,8 @@ function App() {
       e.target === editAvatarRef.current ||
       e.target === addCardRef.current ||
       e.target === delCardRef.current ||
-      e.target === imageRef.current) {
+      e.target === imageRef.current
+    ) {
       closeAllPopups();
     }
   }
@@ -205,18 +258,26 @@ function App() {
     setSelectedCard({});
   }
 
+  function handleCloseError() {
+    const clearError = {
+      ...isError,
+      is: false,
+    };
+    setIsError(clearError);
+  }
+
   // Объект с состояниями попапов
   const popupStateContext = {
     isEditProfilePopupOpen,
     isEditAvatarPopupOpen,
-    isAddPlacePopupOpen
-  }
+    isAddPlacePopupOpen,
+  };
 
   return (
     // Делаем доступным контекст currentUser и состояние попапов
     <StatePopup.Provider value={popupStateContext}>
       <CurrentUserContext.Provider value={currentUser}>
-        <div className="page" onKeyUp={handleEsc} onClick={handleClickOverlay} >
+        <div className="page" onKeyUp={handleEsc} onClick={handleClickOverlay}>
           <Header />
 
           {/*Создаем компонент Main и передаем обработчики через пропсы*/}
@@ -271,8 +332,7 @@ function App() {
             card={cardToDel}
             isLoading={isLoading}
             popupRef={delCardRef}
-          >
-          </DelCardPopup>
+          ></DelCardPopup>
 
           {/*Создаем попап с картинкой и передаем пропсы и обработчики*/}
           <PopupWithImage
@@ -281,9 +341,12 @@ function App() {
             popupRef={imageRef}
           />
 
-          {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}
-          {(isLoadingOpen || isLoading) && <BlockAction isLoadingOpen={isLoadingOpen} />}
+          <MessageError isOpen={isError} onClose={handleCloseError} />
 
+          {/*Если isLoading=true, то ставим блок, чтобы пользователь не мог что то поменять*/}
+          {(isLoadingOpen || isLoading) && (
+            <BlockAction isLoadingOpen={isLoadingOpen} />
+          )}
         </div>
       </CurrentUserContext.Provider>
     </StatePopup.Provider>
